@@ -1,14 +1,46 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, ViewPropTypes } from 'react-native';
+import { Font } from 'expo';
+import fontAwsomeRegular from '../../assets/fonts/fa-regular-400.ttf';
+import fontAwsomeSolid from '../../assets/fonts/fa-solid-900.ttf';
 
 class CircleButton extends React.Component {
+  state = {
+    fontLoaded: false,
+  };
+
+  async componentWillMount() {
+    await Font.loadAsync({
+      'fa-regular': fontAwsomeRegular,
+      'fa-solid': fontAwsomeSolid,
+    });
+
+    this.setState({ fontLoaded: true });
+  }
+
   render() {
+    const { style, color } = this.props;
+
+    console.log('style:', this.props.style);
+
+    let bgColor = '#e31676';
+    let textColor = '#fff';
+
+    if (color === 'white') {
+      bgColor = '#fff';
+      textColor = '#e31676';
+    }
+
     return (
-      <View style={styles.CircleButton}>
-        <Text style={styles.CircleButtonTitle}>
-          {this.props.children}
-        </Text>
+      <View style={[styles.CircleButton, style, { backgroundColor: bgColor }]}>
+        {
+          this.state.fontLoaded ? (
+            <Text style={[styles.CircleButtonTitle, { color: textColor }]}>
+              {this.props.children}
+            </Text>
+          ) : null
+        }
       </View>
     );
   }
@@ -16,6 +48,13 @@ class CircleButton extends React.Component {
 
 CircleButton.propTypes = {
   children: PropTypes.string.isRequired,
+  style: ViewPropTypes.style,
+  color: PropTypes.string,
+};
+
+CircleButton.defaultProps = {
+  style: {},
+  color: '',
 };
 
 const styles = StyleSheet.create({
@@ -35,8 +74,9 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
   },
   CircleButtonTitle: {
-    fontSize: 32,
-    lineHeight: 32,
+    fontFamily: 'fa-solid',
+    fontSize: 24,
+    lineHeight: 24,
     color: '#fff',
   },
 });
